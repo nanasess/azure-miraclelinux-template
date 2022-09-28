@@ -28,7 +28,7 @@ sudo systemctl start httpd.service
 sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 sudo dnf install -y certbot python3-certbot-apache
 
-sudo sh -c 'echo "#!/bin/sh" >> /etc/cron.weekly/certbot_renew'
+sudo sh -c 'echo "#!/bin/sh" > /etc/cron.weekly/certbot_renew'
 sudo sh -c 'echo "certbot renew --post-hook \"systemctl reload httpd\"" >> /etc/cron.weekly/certbot_renew'
 
 sudo chmod +x /etc/cron.weekly/certbot_renew
