@@ -2,7 +2,6 @@
 
 sudo dnf install -y glibc-langpack-ja
 sudo localectl set-locale LANG=ja_JP.UTF-8
-sudo dnf update -y
 sudo dnf install -y git make patch
 
 sudo dnf install -y mariadb-server mysql-devel
@@ -31,3 +30,5 @@ sudo sh -c 'echo "#!/bin/sh" > /etc/cron.weekly/certbot_renew'
 sudo sh -c 'echo "certbot renew --post-hook \"systemctl reload httpd\"" >> /etc/cron.weekly/certbot_renew'
 
 sudo chmod +x /etc/cron.weekly/certbot_renew
+
+#sudo dnf update -y
