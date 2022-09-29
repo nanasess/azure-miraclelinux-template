@@ -13,10 +13,8 @@ if [ ! -e "/var/lib/pgsql/data" ]; then sudo postgresql-setup --initdb; fi
 sudo systemctl enable postgresql.service
 sudo systemctl start postgresql.service
 
-sudo dnf -y distro-sync
 sudo dnf -y module reset php
 sudo dnf -y module enable php:7.4
-sudo dnf -y distro-sync
 
 sudo dnf install -y httpd httpd-devel mod_ssl
 sudo dnf install -y php php-mbstring php-devel php-mhash php-pgsql php-mysqli php-xml php-gd  php-intl php-curl php-zip php-opcache php-pecl-apcu php-pear
@@ -31,4 +29,4 @@ sudo sh -c 'echo "certbot renew --post-hook \"systemctl reload httpd\"" >> /etc/
 
 sudo chmod +x /etc/cron.weekly/certbot_renew
 
-#sudo dnf update -y
+#sudo dnf -y distro-sync
