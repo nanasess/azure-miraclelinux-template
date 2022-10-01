@@ -158,8 +158,7 @@
             "defaultValue": "Delete"
         },
         "adminUsername": {
-            "type": "string",
-            "defaultValue": "nanasess"
+            "type": "string"
         },
         "adminPublicKey": {
             "type": "secureString",
@@ -330,7 +329,7 @@
                     "fileUris": [
                         "[uri(parameters('_artifactsLocation'), concat('install_webapps.sh', parameters('_artifactsLocationSasToken')))]"
                     ],
-                    "commandToExecute": "bash install_webapps.sh"
+                    "commandToExecute": "[concat('bash install_webapps.sh ', parameters('FQDN'), ' ', parameters('adminUsername'))]"
                 }
             }
         }

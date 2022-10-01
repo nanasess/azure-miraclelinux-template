@@ -7,6 +7,9 @@
         },
         "hostname":{
             "value": "GEN-UNIQUE"
+        },
+        "adminUsername":{
+            "value": "GEN-UNIQUE"
         }
     }
 }

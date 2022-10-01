@@ -1,5 +1,8 @@
 #!/bin/bash
 
+FQDN=$1
+USERNAME=$2
+
 sudo dnf install -y glibc-langpack-ja
 sudo localectl set-locale LANG=ja_JP.UTF-8
 sudo dnf install -y git make patch
@@ -30,3 +33,59 @@ sudo sh -c 'echo "certbot renew --post-hook \"systemctl reload httpd\"" >> /etc/
 sudo chmod +x /etc/cron.weekly/certbot_renew
 
 #sudo dnf -y distro-sync
+
+sudo mkdir -p /var/www/html/${FQDN}/html
+sudo mkdir -p /var/www/html/test.${FQDN}/html
+
+sudo chown ${USERNAME}:${USERNAME} -R /var/www/html
+
+sudo sh -c "cat <<EOF > /etc/httpd/conf.d/${FQDN}.conf
+ServerTokens Prod
+<Directory /var/www/html/${FQDN}>
+    Options MultiViews SymLinksIfOwnerMatch IncludesNoExec
+    AllowOverride All
+    Require all granted
+    DirectoryIndex index.html index.htm index.php
+</Directory>
+<Directory /var/www/html/${FQDN}/html/upload>
+    <FilesMatch \\.(php|phar)\$>
+        SetHandler None
+    </FilesMatch>
+    AllowOverride None
+</Directory>
+<VirtualHost *:80>
+    ServerName     ${FQDN}
+    ServerAdmin    webmaster@${FQDN}
+    DocumentRoot   /var/www/html/${FQDN}/html
+    CustomLog      logs/${FQDN}-access_log combined
+    ErrorLog       logs/${FQDN}-error_log
+    Header unset X-Powered-By
+</VirtualHost>
+EOF"
+
+sudo sh -c "cat <<EOF > /etc/httpd/conf.d/test.${FQDN}.conf
+<Directory /var/www/html/test.${FQDN}>
+    Options MultiViews SymLinksIfOwnerMatch IncludesNoExec
+    AllowOverride All
+    Require all granted
+    DirectoryIndex index.html index.htm index.php
+</Directory>
+<Directory /var/www/html/test.${FQDN}/html/upload>
+    <FilesMatch \\.(php|phar)\$>
+        SetHandler None
+    </FilesMatch>
+    AllowOverride None
+</Directory>
+<VirtualHost *:80>
+    ServerName     test.${FQDN}
+    ServerAdmin    webmaster@${FQDN}
+    DocumentRoot   /var/www/html/test.${FQDN}/html
+    CustomLog      logs/test.${FQDN}-access_log combined
+    ErrorLog       logs/test.${FQDN}-error_log
+    Header unset X-Powered-By
+</VirtualHost>
+EOF"
+
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+sudo php composer-setup.php --install-dir=/usr/bin --filename=composer
+rm composer-setup.php
