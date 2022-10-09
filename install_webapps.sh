@@ -5,7 +5,7 @@ USERNAME=$2
 
 sudo dnf install -y glibc-langpack-ja
 sudo localectl set-locale LANG=ja_JP.UTF-8
-sudo dnf install -y git make patch
+sudo dnf install -y git make patch rsync
 
 sudo dnf install -y mariadb-server mysql-devel
 sudo systemctl enable mariadb.service
