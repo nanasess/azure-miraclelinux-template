@@ -12,13 +12,16 @@ sudo dnf install -y mariadb-server mysql-devel
 sudo systemctl enable mariadb.service
 sudo systemctl start mariadb.service
 
+sudo dnf -y module reset php
+sudo dnf -y module enable php:7.4
+
+sudo dnf -y module reset postgresql
+sudo dnf -y module enable postgresql:12
+
 sudo dnf install -y postgresql-server
 if [ ! -e "/var/lib/pgsql/data" ]; then sudo postgresql-setup --initdb; fi
 sudo systemctl enable postgresql.service
 sudo systemctl start postgresql.service
-
-sudo dnf -y module reset php
-sudo dnf -y module enable php:7.4
 
 sudo dnf install -y httpd httpd-devel mod_ssl
 sudo dnf install -y php php-mbstring php-devel php-mhash php-pgsql php-mysqli php-xml php-gd  php-intl php-curl php-zip php-opcache php-pecl-apcu php-pear
