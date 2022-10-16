@@ -28,6 +28,8 @@ sudo dnf install -y php php-mbstring php-devel php-mhash php-pgsql php-mysqli ph
 sudo systemctl enable httpd.service
 sudo systemctl start httpd.service
 
+sudo sed -i -e 's/memory_limit = 128M/memory_limit = 384M/' /etc/php.ini
+
 sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 sudo dnf install -y certbot python3-certbot-apache
 
