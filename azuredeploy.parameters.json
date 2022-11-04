@@ -8,6 +8,9 @@
         "hostname":{
             "value": "GEN-UNIQUE"
         },
+        "stagingHostname":{
+            "value": "GEN-UNIQUE"
+        },
         "adminUsername":{
             "value": "GEN-UNIQUE"
         }

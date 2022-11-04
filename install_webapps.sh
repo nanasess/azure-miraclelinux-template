@@ -2,6 +2,7 @@
 
 FQDN=$1
 USERNAME=$2
+STAGING=$3
 
 sudo dnf install -y glibc-langpack-ja
 sudo localectl set-locale LANG=ja_JP.UTF-8
@@ -43,7 +44,7 @@ sudo chmod +x /etc/cron.weekly/certbot_renew
 #sudo dnf -y distro-sync
 
 sudo mkdir -p /var/www/html/${FQDN}/html
-sudo mkdir -p /var/www/html/test.${FQDN}/html
+sudo mkdir -p /var/www/html/${STAGING}.${FQDN}/html
 
 sudo chown ${USERNAME}:${USERNAME} -R /var/www/html
 
@@ -71,25 +72,25 @@ ServerTokens Prod
 </VirtualHost>
 EOF"
 
-sudo sh -c "cat <<EOF > /etc/httpd/conf.d/test.${FQDN}.conf
-<Directory /var/www/html/test.${FQDN}>
+sudo sh -c "cat <<EOF > /etc/httpd/conf.d/${STAGING}.${FQDN}.conf
+<Directory /var/www/html/${STAGING}.${FQDN}>
     Options MultiViews SymLinksIfOwnerMatch IncludesNoExec
     AllowOverride All
     Require all granted
     DirectoryIndex index.html index.htm index.php
 </Directory>
-<Directory /var/www/html/test.${FQDN}/html/upload>
+<Directory /var/www/html/${STAGING}.${FQDN}/html/upload>
     <FilesMatch \\.(php|phar)\$>
         SetHandler None
     </FilesMatch>
     AllowOverride None
 </Directory>
 <VirtualHost *:80>
-    ServerName     test.${FQDN}
+    ServerName     ${STAGING}.${FQDN}
     ServerAdmin    webmaster@${FQDN}
-    DocumentRoot   /var/www/html/test.${FQDN}/html
-    CustomLog      logs/test.${FQDN}-access_log combined
-    ErrorLog       logs/test.${FQDN}-error_log
+    DocumentRoot   /var/www/html/${STAGING}.${FQDN}/html
+    CustomLog      logs/${STAGING}.${FQDN}-access_log combined
+    ErrorLog       logs/${STAGING}.${FQDN}-error_log
     Header unset X-Powered-By
 </VirtualHost>
 EOF"
