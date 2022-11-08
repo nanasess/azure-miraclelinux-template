@@ -100,6 +100,9 @@ sudo sh -c "cat <<EOF > /etc/httpd/conf.d/dirs.conf
 <DirectoryMatch \.git>
     Require all denied
 </DirectoryMatch>
+<FilesMatch \.env>
+    Require all denied
+</FilesMatch>
 EOF"
 
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
