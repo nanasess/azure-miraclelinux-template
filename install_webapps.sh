@@ -32,6 +32,7 @@ sudo systemctl start httpd.service
 sudo sed -i -e 's/memory_limit = 128M/memory_limit = 384M/' /etc/php.ini
 sudo sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 50M/' /etc/php.ini
 sudo sed -i -e 's/post_max_size = 8M/post_max_size = 50M/' /etc/php.ini
+sudo sed -i -e 's/expose_php = On/expose_php = Off/' /etc/php.ini
 
 sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 sudo dnf install -y certbot python3-certbot-apache
@@ -99,6 +100,9 @@ sudo sh -c "cat <<EOF > /etc/httpd/conf.d/dirs.conf
 <DirectoryMatch \.git>
     Require all denied
 </DirectoryMatch>
+<FilesMatch \.env>
+    Require all denied
+</FilesMatch>
 EOF"
 
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
