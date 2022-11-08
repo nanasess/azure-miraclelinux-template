@@ -95,6 +95,12 @@ sudo sh -c "cat <<EOF > /etc/httpd/conf.d/${STAGING}.${FQDN}.conf
 </VirtualHost>
 EOF"
 
+sudo sh -c "cat <<EOF > /etc/httpd/conf.d/dirs.conf
+<DirectoryMatch \.git>
+    Require all denied
+</DirectoryMatch>
+EOF"
+
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 sudo php composer-setup.php --install-dir=/usr/bin --filename=composer
 rm composer-setup.php
