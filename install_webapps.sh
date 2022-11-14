@@ -6,7 +6,7 @@ STAGING=$3
 
 sudo dnf install -y glibc-langpack-ja
 sudo localectl set-locale LANG=ja_JP.UTF-8
-sudo dnf install -y git make patch rsync libssh2 libssh2-devel
+sudo dnf install -y git make patch rsync
 sudo timedatectl set-timezone Asia/Tokyo
 
 sudo dnf install -y mariadb-server mysql-devel
@@ -108,6 +108,8 @@ EOF"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 sudo php composer-setup.php --install-dir=/usr/bin --filename=composer
 rm composer-setup.php
+
+sudo dnf install -y libssh2 libssh2-devel
 
 echo "autodetect" | sudo pecl install channel://pecl.php.net/ssh2-1.3.1
 sudo sh -c 'echo extension=ssh2.so >> /etc/php.d/40-ssh2.ini'
