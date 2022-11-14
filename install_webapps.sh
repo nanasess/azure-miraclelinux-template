@@ -6,7 +6,7 @@ STAGING=$3
 
 sudo dnf install -y glibc-langpack-ja
 sudo localectl set-locale LANG=ja_JP.UTF-8
-sudo dnf install -y git make patch rsync
+sudo dnf install -y git make patch rsync libssh2 libssh2-devel
 sudo timedatectl set-timezone Asia/Tokyo
 
 sudo dnf install -y mariadb-server mysql-devel
@@ -108,3 +108,14 @@ EOF"
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 sudo php composer-setup.php --install-dir=/usr/bin --filename=composer
 rm composer-setup.php
+
+echo "autodetect" | sudo pecl install channel://pecl.php.net/ssh2-1.3.1
+sudo sh -c 'echo extension=ssh2.so >> /etc/php.d/40-ssh2.ini'
+
+sudo mkdir -p -m 0700 /var/www/.ssh /usr/share/httpd/.ssh
+sudo chown apache:apache /var/www/.ssh /usr/share/httpd/.ssh
+sudo ssh-keyscan localhost | sudo tee -a /usr/share/httpd/.ssh/known_hosts
+sudo chmod 444 /usr/share/httpd/.ssh/known_hosts
+sudo -u apache ssh-keygen -f /var/www/.ssh/id_rsa -N ''
+echo -n 'from="127.0.0.1,::1",restrict,pty ' >> ~${USERNAME}/.ssh/authorized_keys
+cat /var/www/.ssh/id_rsa.pub >> ~${USERNAME}/.ssh/authorized_keys
