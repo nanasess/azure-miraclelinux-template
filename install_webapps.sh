@@ -97,6 +97,7 @@ sudo sh -c "cat <<EOF > /etc/httpd/conf.d/${STAGING}.${FQDN}.conf
 EOF"
 
 sudo sh -c "cat <<EOF > /etc/httpd/conf.d/dirs.conf
+Timeout 600
 <DirectoryMatch \.git>
     Require all denied
 </DirectoryMatch>
