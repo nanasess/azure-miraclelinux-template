@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 FQDN=$1
 USERNAME=$2
 STAGING=$3
@@ -20,7 +22,7 @@ sudo dnf -y module reset postgresql
 sudo dnf -y module enable postgresql:12
 
 sudo dnf install -y postgresql-server
-if [ ! -e "/var/lib/pgsql/data" ]; then sudo postgresql-setup --initdb; fi
+sudo sh -c 'if [ ! -e "/var/lib/pgsql/data/PG_VERSION" ]; then postgresql-setup --initdb; fi'
 sudo systemctl enable postgresql.service
 sudo systemctl start postgresql.service
 
@@ -42,7 +44,7 @@ sudo sh -c 'echo "certbot renew --post-hook \"systemctl reload httpd\"" >> /etc/
 
 sudo chmod +x /etc/cron.weekly/certbot_renew
 
-#sudo dnf -y distro-sync
+# #sudo dnf -y distro-sync
 
 sudo mkdir -p /var/www/html/${FQDN}/html
 sudo mkdir -p /var/www/html/${STAGING}.${FQDN}/html
@@ -112,13 +114,16 @@ rm composer-setup.php
 
 sudo dnf install -y libssh2 libssh2-devel
 
-echo "autodetect" | sudo pecl install channel://pecl.php.net/ssh2-1.3.1
+echo "autodetect" | sudo pecl install channel://pecl.php.net/ssh2-1.3.1 || true
 sudo sh -c 'echo extension=ssh2.so >> /etc/php.d/40-ssh2.ini'
 
-sudo mkdir -p -m 0700 /var/www/.ssh /usr/share/httpd/.ssh
+USER_HOME=$(sudo -u ${USERNAME} getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
+sudo mkdir -p -m 0700 /var/www/.ssh /usr/share/httpd/.ssh ${USER_HOME}/.ssh
 sudo chown apache:apache /var/www/.ssh /usr/share/httpd/.ssh
+sudo chown ${USERNAME}:${USERNAME} ${USER_HOME}/.ssh
 sudo ssh-keyscan localhost | sudo tee -a /usr/share/httpd/.ssh/known_hosts
 sudo chmod 444 /usr/share/httpd/.ssh/known_hosts
 sudo -u apache ssh-keygen -f /var/www/.ssh/id_rsa -N ''
-echo -n 'from="127.0.0.1,::1",restrict,pty ' >> ~${USERNAME}/.ssh/authorized_keys
-cat /var/www/.ssh/id_rsa.pub >> ~${USERNAME}/.ssh/authorized_keys
+sudo -u ${USERNAME} sh -c "echo -n 'from=\"127.0.0.1,::1\",restrict,pty ' >> ${USER_HOME}/.ssh/authorized_keys"
+sudo sh -c "cat /var/www/.ssh/id_rsa.pub >> ${USER_HOME}/.ssh/authorized_keys"
+
