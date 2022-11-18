@@ -114,7 +114,7 @@ rm composer-setup.php
 
 sudo dnf install -y libssh2 libssh2-devel
 
-echo "autodetect" | sudo pecl install channel://pecl.php.net/ssh2-1.3.1 || true
+echo "autodetect" | sudo pecl install channel://pecl.php.net/ssh2-1.3.1
 sudo sh -c 'echo extension=ssh2.so >> /etc/php.d/40-ssh2.ini'
 
 USER_HOME=$(sudo -u ${USERNAME} getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)
