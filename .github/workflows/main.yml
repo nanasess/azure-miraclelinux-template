@@ -28,7 +28,22 @@ jobs:
           parameters: FQDN=${{ env.AZURE_RG }}.skirnir.dev hostname=${{ env.AZURE_RG }} stagingHostname=test-${{ env.AZURE_RG }} adminUsername=nanasess adminPublicKey="${{ secrets.PUBLIC_KEY }}"
           failOnStdErr: false
 
-        # output containerName variable from template
-      - run: echo ${{ steps.deploy.outputs.containerName }}
+      - run: echo "PUBLIC_IP=$(az vm show -d -g ${AZURE_RG} -n ${AZURE_RG} --query publicIps -o tsv)" >> ${GITHUB_ENV}
+      - run: echo "KNOWN_HOSTS=$(ssh-keyscan ${PUBLIC_IP})" >> ${GITHUB_ENV}
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ env.KNOWN_HOSTS }}
+          config: |
+            Host ${{ env.AZURE_RG }}
+                Hostname ${{ env.PUBLIC_IP }}
+                User nanasess
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+      - run: bundle install
+      - run: TARGET_HOST=${AZURE_RG} rake spec
       - run: az group delete -y --name ${AZURE_RG} --force-deletion-types Microsoft.Compute/virtualMachines
         if: always()
