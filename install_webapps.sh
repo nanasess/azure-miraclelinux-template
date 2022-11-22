@@ -30,6 +30,8 @@ sudo dnf install -y httpd httpd-devel mod_ssl
 sudo dnf install -y php php-mbstring php-devel php-mhash php-pgsql php-mysqli php-xml php-gd  php-intl php-curl php-zip php-opcache php-pecl-apcu php-pear
 sudo systemctl enable httpd.service
 sudo systemctl start httpd.service
+sudo systemctl enable php-fpm.service
+sudo systemctl start php-fpm.service
 
 sudo sed -i -e 's/memory_limit = 128M/memory_limit = 384M/' /etc/php.ini
 sudo sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 50M/' /etc/php.ini
